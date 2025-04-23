@@ -7,7 +7,6 @@ from service.common import status
 
 COUNTER = {}
 
-
 @app.route("/health")
 def health():
     """Health Status"""
@@ -16,13 +15,13 @@ def health():
 
 @app.route("/")
 def index():
-    """Returns information abut the service"""
+    """Returns information about the service"""
     app.logger.info("Request for Base URL")
     return jsonify(
         status=status.HTTP_200_OK,
         message="Hit Counter Service",
         version="1.0.0",
-        url=url_for("list_counters", _external=True),
+        url=url_for("list_counters", _external=True)
     )
 
 
@@ -47,11 +46,9 @@ def create_counters(name):
 
     COUNTER[name] = 0
     location_url = url_for("read_counters", name=name, _external=True)
-    return (
-        jsonify(name=name, counter=0),
-        status.HTTP_201_CREATED,
-        {"Location": location_url},
-    )
+    return jsonify(name=name, counter=0), status.HTTP_201_CREATED, {
+        "Location": location_url
+    }
 
 
 @app.route("/counters/<name>", methods=["GET"])
@@ -62,4 +59,7 @@ def read_counters(name):
     if name not in COUNTER:
         return abort(
             status.HTTP_404_NOT_FOUND,
-            f"Counter {name
+            f"Counter {name} not found"
+        )
+    
+    return jsonify(name=name, counter=COUNTER[name])
